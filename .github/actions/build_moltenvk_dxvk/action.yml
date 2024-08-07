@@ -30,6 +30,9 @@ runs:
         sed 's|#include "util_vector.h"|#include "util_vector.h"\n#include <cstdint>|' src/util/util_matrix.h > src/util/util_matrix2.h
         mv src/util/util_matrix2.h src/util/util_matrix.h
 
+        sed 's|#include <string>|#include <string>\n#include <cstdint>|' src/util/config/config.h > src/util/config/config2.h
+        mv src/util/config/config2.h src/util/config/config.h
+
         popd
 
     - name: Install distutils
