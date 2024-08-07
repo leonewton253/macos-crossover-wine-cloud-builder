@@ -14,85 +14,30 @@ env:
     WINE_CONFIGURE: ${{ github.workspace }}/sources/wine/configure
     # build directories
     BUILDROOT: ${{ github.workspace }}/build
-    LLVM_BUILDDIR: ${{ github.workspace }}/build/llvm
-    CLANG_BUILDDIR: ${{ github.workspace }}/build/clang
     # target directory for installation
     INSTALLROOT: ${{ github.workspace }}/install
     TOOLS_INSTALLATION: build-tools-cx
     MOLTENVK_DXVK_INSTALLATION: moltenvk-dxvk
 
 jobs:
-  llvm-clang:
-    runs-on:  macos-10.15
-    env:
-      # crossover source code to be downloaded
-      CROSS_OVER_SOURCE_URL: https://media.codeweavers.com/pub/crossover/source/crossover-sources-21.2.0.tar.gz
-      CROSS_OVER_LOCAL_FILE: crossover-21.2.0
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      ############ Restore LLVM / Clang from cache ##############
-
-      - name: Restore LLVM / Clang from cache
-        uses: actions/cache@v2
-        id: cache_llvm_clang
-        with:
-          path: ${{ env.INSTALLROOT }}/${{ env.TOOLS_INSTALLATION }}
-          key: llvm_clang
-
-      ############ Build LLVM / Clang (if restore from cache failed) ##############
-
-      - name: Get and Extract Source
-        if:  steps.cache_llvm_clang.outputs.cache-hit != 'true'
-        uses: ./.github/actions/get_source
-        with:
-          crossover-local-file: "${{ env.CROSS_OVER_LOCAL_FILE }}"
-          crossover-source-url: "${{ env.CROSS_OVER_SOURCE_URL }}"
-
-      - name: Build / Install LLVM and Clang (if restore from cache failed)
-        if:  steps.cache_llvm_clang.outputs.cache-hit != 'true'
-        uses: ./.github/actions/build_llvm_clang
-        with:
-          install-prefix: ${{ env.INSTALLROOT }}/${{ env.TOOLS_INSTALLATION }}
-          llvm-makedir: ${{ github.workspace }}/sources/clang/llvm
-          clang-makedir: ${{ github.workspace }}/sources/clang/clang
-
-      ############ Upload LLVM / Clang to be used in subsequent jobs ##############
-
-      - name: Tar Build Tools
-        run: |
-          set -x
-          pushd ${{ env.INSTALLROOT }}
-          tar -czf ${{ env.TOOLS_INSTALLATION }}.tar.gz ${{ env.TOOLS_INSTALLATION }}
-          ls -alt
-          popd
-
-      - name: Upload Build Tools
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.TOOLS_INSTALLATION }}
-          path: ${{ env.INSTALLROOT }}/${{ env.TOOLS_INSTALLATION }}.tar.gz
-
-
   moltenVK_DXVK:
-    runs-on:  macos-10.15
+    runs-on:  macos-latest
     env:
       # crossover source code to be downloaded
       CROSS_OVER_SOURCE_URL: https://media.codeweavers.com/pub/crossover/source/crossover-sources-21.2.0.tar.gz
-      CROSS_OVER_LOCAL_FILE: crossover-21.2.0
+      CROSS_OVER_LOCAL_FILE: crossover-22.0.1
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       ############ Restore MoltenVK / DXVK from cache ##############
 
       - name: Restore MoltenVK / DXVK from cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache_moltenVK_DXVK
         with:
           path: ${{ env.INSTALLROOT }}/${{ env.MOLTENVK_DXVK_INSTALLATION }}
-          key: cache_moltenVK_DXVK_v2
+          key: cache_moltenVK_DXVK_v6
 
       ############ Build MoltenVK / DXVK (if restore from cache failed) ##############
 
@@ -120,21 +65,20 @@ jobs:
           popd
 
       - name: Upload MoltenVK / DXVK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.MOLTENVK_DXVK_INSTALLATION }}
           path: ${{ env.INSTALLROOT }}/${{ env.MOLTENVK_DXVK_INSTALLATION }}.tar.gz
 
 
   wine-crossover:
-    needs: [llvm-clang, moltenVK_DXVK]
+    needs: [moltenVK_DXVK]
 
     strategy:
       fail-fast: false
       matrix:
-        CROSS_OVER_VERSION: [21.2.0, 20.0.4, 19.0.2] # 21.1.0, 21.0.0, 20.0.2, 20.0.1, 20.0.0
-
-    runs-on:  macos-10.15
+        CROSS_OVER_VERSION: [22.0.1, 21.2.0, 20.0.4, 19.0.2] # 22.0.0, 21.1.0, 21.0.0, 20.0.2, 20.0.1, 20.0.0, 19.0.1, 19.0.0
+    runs-on:  macos-latest
 
     env:
       # crossover source code to be downloaded
@@ -149,7 +93,11 @@ jobs:
       ############ Prepare Workspace / Environment ##############
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Get latest HomeBrew formulas/bottles
+        run: |
+          brew update
 
       - name: Install Wine Build Dependencies
         run: |
@@ -162,47 +110,32 @@ jobs:
 
       - name: Install Wine Runtime Dependencies
         run: |
-          brew install  faudio           \
-                        freetype         \
-                        gphoto2          \
-                        gst-plugins-base \
-                        krb5             \
-                        little-cms2      \
-                        libpng           \
-                        molten-vk        \
-                        mpg123           \
-                        sane-backends    \
+          brew install  freetype           \
+                        gphoto2            \
+                        gst-plugins-base   \
+                        krb5               \
+                        molten-vk          \
+                        sane-backends      \
                         sdl2
 
-      - name: Add bison, flex & krb5 to $PATH
+      - name: Install Wine Runtime Dependencies (pre 22)
+        if: ${{ matrix.CROSS_OVER_VERSION < '22' }}
+        run: |
+          brew install  faudio             \
+                        little-cms2        \
+                        libpng             \
+                        mpg123
+
+      - name: Add bison, cx-llvm, flex & krb5 to $PATH
         run: |
           set -x
-          echo "$(brew --prefix bison)/bin" >> $GITHUB_PATH
-          echo "$(brew --prefix flex)/bin"  >> $GITHUB_PATH
-          echo "$(brew --prefix krb5)/bin"  >> $GITHUB_PATH
-
-      - name: Download llvm/clang (from previous job)
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.TOOLS_INSTALLATION }}
-          path: ${{ env.INSTALLROOT }}
-
-      - name: Unpack llvm/clang
-        run: |
-          set -x
-          pushd ${{ env.INSTALLROOT }}
-          ls -al
-          tar -xvf ${{ env.TOOLS_INSTALLATION }}.tar.gz
-          ls -alt
-          popd
-
-      - name: Add llvm/clang to $PATH
-        run: |
-          set -x
-          echo "${{ env.INSTALLROOT }}/${{ env.TOOLS_INSTALLATION }}/bin" >> $GITHUB_PATH
+          echo "$(brew --prefix bison)/bin"   >> $GITHUB_PATH
+          echo "$(brew --prefix cx-llvm)/bin" >> $GITHUB_PATH
+          echo "$(brew --prefix flex)/bin"    >> $GITHUB_PATH
+          echo "$(brew --prefix krb5)/bin"    >> $GITHUB_PATH
 
       - name: Download MoltenVK / DXVK (from previous job)
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ env.MOLTENVK_DXVK_INSTALLATION }}
           path: ${{ env.INSTALLROOT }}
@@ -232,6 +165,13 @@ jobs:
           patch -p1 < ${{ github.workspace }}/distversion.patch
           popd
 
+      - name: Patch in vkd3d-1.4 (specific to 22.0.0)
+        if: ${{ matrix.CROSS_OVER_VERSION == '22.0.0' }}
+        run: |
+          pushd sources/wine
+          patch -p1 < ${GITHUB_WORKSPACE}/CX22.0.0-vkd3d-1.4.patch
+          popd
+
       - name: Patch ntdll/wcstring.c to prevent crash if a nullptr is supplied to the function
         # Hack by dasmy
         if: startsWith(matrix.CROSS_OVER_VERSION, '20')
@@ -240,53 +180,18 @@ jobs:
           patch -p1 < ${{ github.workspace }}/wcstring.patch
           popd
 
-      - name: Patch msvcrt to export the missing sincos function
-        # https://github.com/wine-mirror/wine/commit/f0131276474997b9d4e593bbf8c5616b879d3bd5
+      - name: Patch msvcrt to export the missing sincos function (specific to 20)
+        # https://gitlab.winehq.org/wine/wine/-/commit/f0131276474997b9d4e593bbf8c5616b879d3bd5
         if: startsWith(matrix.CROSS_OVER_VERSION, '20')
         run: |
           pushd sources/wine
           patch -p1 < ${{ github.workspace }}/msvcrt-sincos.patch
           popd
 
-      ############ Build VKD3D ##############
-      - name: Build VKD3D
-        if: startsWith(matrix.CROSS_OVER_VERSION, '21')
-        run: |
-          brew install  automake
-
-          pushd sources/vkd3d
-
-          ./autogen.sh
-
-          ln -s $(brew --prefix mingw-w64)/toolchain-x86_64/bin/x86_64-w64-mingw32-widl ./bin/widl
-          export PATH=./bin:$PATH
-
-          CPPFLAGS="-I ${{ env.INSTALLROOT }}/${{ env.WINE_INSTALLATION }}/usr/local/include/" ./configure --without-ncurses
-          make -j
-          make install
-          popd
-
-      ############ Install VKD3D ##############
-      - name: Install VKD3D
-        if: startsWith(matrix.CROSS_OVER_VERSION, '21')
-        run: |
-          pushd sources/vkd3d
-          make install-exec-am DESTDIR="${{ env.INSTALLROOT }}/${{ env.WINE_INSTALLATION }}"
-          popd
-
       ############ Configure 64bit Version ##############
 
-      - name: Configure wine64 (specific to 21)
-        if: startsWith(matrix.CROSS_OVER_VERSION, '21')
-        uses: ./.github/actions/configure_wine
-        with:
-          winearch: "wine64"
-          build-dir: "${{ env.BUILDROOT }}/wine64"
-          crossflags: "-g -O2"
-          configure-params: "--enable-win64 --with-vulkan --with-vkd3d"
-
-      - name: Configure wine64 (specific to 20)
-        if: startsWith(matrix.CROSS_OVER_VERSION, '20')
+      - name: Configure wine64 (specific to 22)
+        if: startsWith(matrix.CROSS_OVER_VERSION, '22')
         uses: ./.github/actions/configure_wine
         with:
           winearch: "wine64"
@@ -294,8 +199,8 @@ jobs:
           crossflags: "-g -O2"
           configure-params: "--enable-win64 --with-vulkan"
 
-      - name: Configure wine64 (specific to 19)
-        if: startsWith(matrix.CROSS_OVER_VERSION, '19')
+      - name: Configure wine64 (pre 22)
+        if: ${{ matrix.CROSS_OVER_VERSION < '22' }}
         uses: ./.github/actions/configure_wine
         with:
           winearch: "wine64"
@@ -312,23 +217,23 @@ jobs:
 
       ############ Configure 32on64bit Version ##############
 
-      - name: Configure wine32on64 (specific to 2x)
-        if: startsWith(matrix.CROSS_OVER_VERSION, '2')
+      - name: Configure wine32on64 (specific to 22)
+        if: startsWith(matrix.CROSS_OVER_VERSION, '22')
         uses: ./.github/actions/configure_wine
         with:
           winearch: "wine32on64"
           build-dir: "${{ env.BUILDROOT }}/wine32on64"
           crossflags: "-g -O2"
-          configure-params: "--enable-win32on64 --with-wine64=${{ env.BUILDROOT }}/wine64 --without-cms --without-gstreamer --without-gphoto --without-sane --without-krb5 --disable-winedbg --without-vkd3d --without-vulkan --disable-vulkan_1 --disable-winevulkan"
+          configure-params: "--enable-win32on64 --with-wine64=${{ env.BUILDROOT }}/wine64 --without-cms --without-openal --without-gstreamer --without-gphoto --without-krb5 --without-sane --without-vulkan --disable-vulkan_1 --disable-winedbg --disable-winevulkan"
 
-      - name: Configure wine32on64 (specific to 19)
-        if: startsWith(matrix.CROSS_OVER_VERSION, '19')
+      - name: Configure wine32on64 (pre 22)
+        if: ${{ matrix.CROSS_OVER_VERSION < '22' }}
         uses: ./.github/actions/configure_wine
         with:
           winearch: "wine32on64"
           build-dir: "${{ env.BUILDROOT }}/wine32on64"
           crossflags: "-g -O2 -fcommon"
-          configure-params: "--enable-win32on64 --with-wine64=${{ env.BUILDROOT }}/wine64 --without-cms --without-gstreamer --without-gphoto --without-sane --without-krb5 --disable-winedbg --without-vkd3d --without-vulkan --disable-vulkan_1 --disable-winevulkan"
+          configure-params: "--enable-win32on64 --with-wine64=${{ env.BUILDROOT }}/wine64 --without-cms --without-gstreamer --without-gphoto --without-krb5 --without-sane --without-vkd3d --without-vulkan --disable-vulkan_1 --disable-winedbg --disable-winevulkan"
 
       ############ Build 32on64bit Version ##############
 
@@ -358,17 +263,6 @@ jobs:
           ln -s wine32on64-preloader wine-preloader
           popd
 
-      ############ Add rpath to VKD3D, MoltenVK libs ##############
-
-      - name: Add rpath entry for VKD3D, MoltenVK
-        if: startsWith(matrix.CROSS_OVER_VERSION, '21')
-        run: |
-          pushd ${{ env.INSTALLROOT }}/${{ env.WINE_INSTALLATION }}/usr/local/bin
-          install_name_tool -add_rpath @executable_path/../lib wine64
-          install_name_tool -add_rpath @executable_path/../lib wine64-preloader
-          install_name_tool -add_rpath @executable_path/../lib vkd3d-compiler
-          popd
-
       ############ Bundle and Upload Deliverable ##############
 
       - name: Tar Wine
@@ -379,7 +273,35 @@ jobs:
           popd
 
       - name: Upload Wine
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.WINE_INSTALLATION }}
           path: ${{ env.INSTALLROOT }}/${{ env.WINE_INSTALLATION }}.tar.gz
+
+  wine-crossover-local:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        CROSS_OVER_VERSION: [22.0.1] # 22.0.0, 21.2.0, 20.0.4, 19.0.2, 21.1.0, 21.0.0, 20.0.2, 20.0.1, 20.0.0
+    runs-on:  macos-latest
+    needs: wine-crossover
+
+    env:
+      CROSS_OVER_VERSION: ${{ matrix.CROSS_OVER_VERSION }}
+      # this has to be synchronized with the same variable in build_local.sh
+      PACKAGE_UPLOAD: ${{ github.workspace }}/upload
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run build_local.sh
+        run: ./build_local.sh
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifacts-build_local-wine-cx${{ matrix.CROSS_OVER_VERSION }}
+          path: ${{ env.PACKAGE_UPLOAD }}
