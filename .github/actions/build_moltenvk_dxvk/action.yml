@@ -61,7 +61,7 @@ runs:
     - name: Get latest HomeBrew formulas/bottles
       shell: bash
       run: |
-        brew update
+        #brew update
 
     - name: Install Dependencies for DXVK
       shell: bash
