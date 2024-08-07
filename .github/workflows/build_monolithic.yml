@@ -154,9 +154,10 @@ jobs:
       - name: Install Wine Build Dependencies
         run: |
           brew update
-          brew install  bison            \
-                        flex             \
-                        mingw-w64        \
+          brew install  bison              \
+                        gcenx/wine/cx-llvm \
+                        flex               \
+                        mingw-w64          \
                         pkgconfig
 
       - name: Install Wine Runtime Dependencies
