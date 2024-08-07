@@ -26,7 +26,10 @@ runs:
     - name: Install distutils
       shell: bash
       run: |
-        brew install python-setuptools
+        python --version
+        pip install setuptools
+        python --version
+        pip install --upgrade setuptools
 
     ############ Build and Install MoltenVK ##############
     - name: Build MoltenVK
