@@ -33,6 +33,10 @@ runs:
         sed 's|#include <string>|#include <string>\n#include <cstdint>|' src/util/config/config.h > src/util/config/config2.h
         mv src/util/config/config2.h src/util/config/config.h
 
+        sed 's|#include "d3d11_device_child.h"|#include "d3d11_device_child.h"\n#include "d3d11_device.h"|' src/d3d11/d3d11_shader.h > src/d3d11/d3d11_shader2.h
+        sed 's|class D3D11Device;||' src/d3d11/d3d11_shader2.h > src/d3d11/d3d11_shader.h
+        cat src/d3d11/d3d11_shader.h
+
         popd
 
     - name: Install distutils
