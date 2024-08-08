@@ -23,11 +23,11 @@ runs:
         patch -p1 < ${{ github.workspace }}/0003-fixes-for-mingw-gcc-12.patch
         popd
 
-    - name: test-first
-      shell: bash
-      run: |
-        ls -lah /usr/local/bin
-        exit 1
+#    - name: test-first
+#      shell: bash
+#      run: |
+#        ls -lah /usr/local/bin
+#        exit 1
 
     - name: test
       shell: bash
