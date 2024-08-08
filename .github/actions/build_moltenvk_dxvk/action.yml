@@ -46,7 +46,8 @@ runs:
         gcc --version
         brew reinstall gcc@12
 
-        export CC=$(brew --prefix gcc@12)/bin/gcc-12
+        ln -sf $(brew --prefix gcc@12)/bin/gcc-12 /usr/local/bin/gcc
+        ln -sf $(brew --prefix gcc@12)/bin/g++-12 /usr/local/bin/g++
 
         which gcc
         gcc --version
