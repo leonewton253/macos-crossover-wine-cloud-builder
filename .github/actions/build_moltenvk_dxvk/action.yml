@@ -46,8 +46,8 @@ runs:
         gcc --version
         brew reinstall gcc@12
 
-        ln -sf $(brew --prefix gcc@12)/bin/gcc-12 /usr/local/bin/gcc
-        ln -sf $(brew --prefix gcc@12)/bin/g++-12 /usr/local/bin/g++
+        ln -sf /usr/local/Cellar/gcc@12/12.4.0/bin/gcc-12 /usr/local/bin/gcc
+        ln -sf /usr/local/Cellar/gcc@12/12.4.0/bin/g++-12 /usr/local/bin/g++
 
         which gcc
         $(brew --prefix gcc@12)/bin/gcc-12 --version
