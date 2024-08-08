@@ -70,6 +70,18 @@ runs:
 
         echo 5
 
+        export PATH="/usr/local/bin:$PATH"
+        which gcc
+        gcc --version
+
+        echo 6
+
+        source ~/.bashrc
+        which gcc
+        gcc --version
+
+        echo 7
+
         exit 1
 
     - name: Install distutils
