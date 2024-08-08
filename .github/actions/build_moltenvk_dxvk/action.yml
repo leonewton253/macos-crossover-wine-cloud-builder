@@ -49,8 +49,10 @@ runs:
         ln -sf /usr/local/Cellar/gcc@12/12.4.0/bin/gcc-12 /usr/local/bin/gcc
         ln -sf /usr/local/Cellar/gcc@12/12.4.0/bin/g++-12 /usr/local/bin/g++
 
-        which gcc
+        which gcc-12
         $(brew --prefix gcc@12)/bin/gcc-12 --version
+        which gcc-12
+        gcc-12 --version
         ls -lah /usr/local/bin/ | grep gcc
         which gcc
         gcc --version
