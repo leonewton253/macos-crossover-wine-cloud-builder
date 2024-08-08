@@ -50,6 +50,8 @@ runs:
         ln -sf $(brew --prefix gcc@12)/bin/g++-12 /usr/local/bin/g++
 
         which gcc
+        $(brew --prefix gcc@12)/bin/gcc-12 --version
+        which gcc
         gcc --version
         exit 1
 
