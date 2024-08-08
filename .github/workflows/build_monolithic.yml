@@ -77,8 +77,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        CROSS_OVER_VERSION: [22.0.1, 21.2.0, 20.0.4, 19.0.2] # 22.0.0, 21.1.0, 21.0.0, 20.0.2, 20.0.1, 20.0.0, 19.0.1, 19.0.0
-    runs-on:  macos-latest
+        CROSS_OVER_VERSION: [22.0.1] #, 21.2.0, 20.0.4, 19.0.2] # 22.0.0, 21.1.0, 21.0.0, 20.0.2, 20.0.1, 20.0.0, 19.0.1, 19.0.0
+    runs-on:  macos-13
 
     env:
       # crossover source code to be downloaded
@@ -102,11 +102,12 @@ jobs:
       - name: Install Wine Build Dependencies
         run: |
           brew update
-          brew install  bison              \
-                        gcenx/wine/cx-llvm \
+          brew install  gcenx/wine/cx-llvm \
                         flex               \
-                        mingw-w64          \
                         pkgconfig
+
+          wget https://raw.githubusercontent.com/Homebrew/homebrew-core/d5ec00528f86b8ac31fac2a67b7667cc72aa1b04/Formula/mingw-w64.rb -O mingw-w64.rb
+          brew install mingw-w64.rb
 
       - name: Install Wine Runtime Dependencies
         run: |
@@ -284,7 +285,7 @@ jobs:
       fail-fast: false
       matrix:
         CROSS_OVER_VERSION: [22.0.1] # 22.0.0, 21.2.0, 20.0.4, 19.0.2, 21.1.0, 21.0.0, 20.0.2, 20.0.1, 20.0.0
-    runs-on:  macos-latest
+    runs-on:  macos-13
     needs: wine-crossover
 
     env:
