@@ -99,12 +99,7 @@ runs:
         brew install  glslang   \
                       meson
 
-        brew tap-new $USER/mingw-w64-tap
-        brew extract --version=10.0.0 mingw-w64 $USER/mingw-w64-tap
-
-        brew install $USER/mingw-w64-tap/mingw-w64@10.0.0
-
-        x86_64-w64-mingw32-gcc --version
+        brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/d5ec00528f86b8ac31fac2a67b7667cc72aa1b04/Formula/mingw-w64.rb
 
     - name: Build DXVK
       shell: bash
