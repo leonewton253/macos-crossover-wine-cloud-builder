@@ -97,15 +97,14 @@ runs:
       shell: bash
       run: |
         brew install  glslang   \
-                      mingw-w64 \
                       meson
 
-        rm /usr/local/bin/x86_64-w64-mingw32-{gcc,g++,ar}
-        ln -sf /usr/local/bin/gcc-12 /usr/local/bin/x86_64-w64-mingw32-gcc
-        ln -sf /usr/local/bin/g++-12 /usr/local/bin/x86_64-w64-mingw32-g++
-        ln -sf /usr/local/bin/gcc-ar-12 /usr/local/bin/x86_64-w64-mingw32-ar
+        brew tap-new $USER/mingw-w64-tap
+        brew extract --version=10.0.0 mingw-w64 $USER/mingw-w64-tap
 
-        export PATH="/usr/local/bin:$PATH"
+        brew install $USER/mingw-w64-tap/mingw-w64@10.0.0
+
+        x86_64-w64-mingw32-gcc --version
 
     - name: Build DXVK
       shell: bash
