@@ -35,7 +35,6 @@ runs:
 
         sed 's|#include "d3d11_device_child.h"|#include "d3d11_device_child.h"\n#include "d3d11_device.h"|' src/d3d11/d3d11_shader.h > src/d3d11/d3d11_shader2.h
         sed 's|class D3D11Device;||' src/d3d11/d3d11_shader2.h > src/d3d11/d3d11_shader.h
-        cat src/d3d11/d3d11_shader.h
 
         popd
 
@@ -43,7 +42,7 @@ runs:
       shell: bash
       run: |
         gcc --version
-        brew install gcc@12
+        brew reinstall gcc@12
         gcc --version
         exit 1
 
