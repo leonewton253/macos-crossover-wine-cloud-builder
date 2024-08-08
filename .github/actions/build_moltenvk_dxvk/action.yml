@@ -42,11 +42,13 @@ runs:
       shell: bash
       run: |
         brew update
+        which gcc
         gcc --version
         brew reinstall gcc@12
 
         export CC=$(brew --prefix gcc@12)/bin/gcc-12
 
+        which gcc
         gcc --version
         exit 1
 
