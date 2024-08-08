@@ -51,6 +51,7 @@ runs:
 
         which gcc
         $(brew --prefix gcc@12)/bin/gcc-12 --version
+        ls -lah /usr/local/bin/ | grep gcc
         which gcc
         gcc --version
         exit 1
