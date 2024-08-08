@@ -22,6 +22,29 @@ if [ -z "$CROSS_OVER_VERSION" ]; then
     echo "CROSS_OVER_VERSION not set building crossover-wine-${CROSS_OVER_VERSION}"
 fi
 
+
+ln -sf /usr/local/bin/c++-12 /usr/local/bin/c++
+ln -sf /usr/local/bin/cpp-12 /usr/local/bin/cpp
+ln -sf /usr/local/bin/g++-12 /usr/local/bin/g++
+ln -sf /usr/local/bin/gcc-12 /usr/local/bin/gcc
+ln -sf /usr/local/bin/gcc-ar-12 /usr/local/bin/gcc-ar
+ln -sf /usr/local/bin/gcc-nm-12 /usr/local/bin/gcc-nm
+ln -sf /usr/local/bin/gcc-ranlib-12 /usr/local/bin/gcc-ranlib
+ln -sf /usr/local/bin/gcov-12 /usr/local/bin/gcov
+ln -sf /usr/local/bin/gcov-dump-12 /usr/local/bin/gcov-dump
+ln -sf /usr/local/bin/gcov-tool-12 /usr/local/bin/gcov-tool
+ln -sf /usr/local/bin/gfortran-12 /usr/local/bin/gfortran
+ln -sf /usr/local/bin/lto-dump-12 /usr/local/bin/lto-dump
+
+export PATH="/usr/local/bin:$PATH"
+
+which gcc
+gcc --version
+
+which cpp
+cpp --version
+
+
 export CX_MAJOR="${CROSS_OVER_VERSION:0:2}"
 
 # crossover source code to be downloaded
@@ -54,10 +77,13 @@ export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
 begingroup "Installing Dependencies"
 # build dependencies
 brew install \
-    bison \
     gcenx/wine/cx-llvm \
-    mingw-w64 \
     pkgconfig
+
+brew reinstall  bison
+
+wget https://raw.githubusercontent.com/Homebrew/homebrew-core/d5ec00528f86b8ac31fac2a67b7667cc72aa1b04/Formula/mingw-w64.rb -O mingw-w64.rb
+brew install mingw-w64.rb
 
 # runtime dependencies for crossover-wine
 brew install \
@@ -222,64 +248,64 @@ popd
 endgroup
 
 
-begingroup "Configure wine32on64-${CROSS_OVER_VERSION}"
-mkdir -p ${BUILDROOT}/wine32on64-${CROSS_OVER_VERSION}
-pushd ${BUILDROOT}/wine32on64-${CROSS_OVER_VERSION}
-${WINE_CONFIGURE} \
-    --disable-option-checking \
-    --enable-win32on64 \
-    --disable-winedbg \
-    --with-wine64=${BUILDROOT}/wine64-${CROSS_OVER_VERSION} \
-    --disable-tests \
-    --without-alsa \
-    --without-capi \
-    --with-coreaudio \
-    --with-cups \
-    --without-dbus \
-    --without-fontconfig \
-    --with-freetype \
-    --with-gettext \
-    --without-gettextpo \
-    --without-gphoto \
-    --with-gnutls \
-    --without-gssapi \
-    --without-gstreamer \
-    --without-inotify \
-    --without-krb5 \
-    --with-mingw \
-    --without-netapi \
-    --with-opencl \
-    --with-opengl \
-    --without-oss \
-    --with-pcap \
-    --with-pthread \
-    --without-pulse \
-    --without-sane \
-    --with-sdl \
-    --without-udev \
-    --with-unwind \
-    --without-usb \
-    --without-v4l2 \
-    --without-x \
-    --without-vulkan \
-    --disable-vulkan_1 \
-    --disable-winevulkan
-popd
-endgroup
-
-
-begingroup "Build wine32on64-${CROSS_OVER_VERSION}"
-pushd ${BUILDROOT}/wine32on64-${CROSS_OVER_VERSION}
-make -k -j$(sysctl -n hw.activecpu 2>/dev/null)
-popd
-endgroup
-
-
-begingroup "Install wine32on64-${CROSS_OVER_VERSION}"
-pushd ${BUILDROOT}/wine32on64-${CROSS_OVER_VERSION}
-make install-lib DESTDIR="${INSTALLROOT}/${WINE_INSTALLATION}"
-popd
-endgroup
+#begingroup "Configure wine32on64-${CROSS_OVER_VERSION}"
+#mkdir -p ${BUILDROOT}/wine32on64-${CROSS_OVER_VERSION}
+#pushd ${BUILDROOT}/wine32on64-${CROSS_OVER_VERSION}
+#${WINE_CONFIGURE} \
+#    --disable-option-checking \
+#    --enable-win32on64 \
+#    --disable-winedbg \
+#    --with-wine64=${BUILDROOT}/wine64-${CROSS_OVER_VERSION} \
+#    --disable-tests \
+#    --without-alsa \
+#    --without-capi \
+#    --with-coreaudio \
+#    --with-cups \
+#    --without-dbus \
+#    --without-fontconfig \
+#    --with-freetype \
+#    --with-gettext \
+#    --without-gettextpo \
+#    --without-gphoto \
+#    --with-gnutls \
+#    --without-gssapi \
+#    --without-gstreamer \
+#    --without-inotify \
+#    --without-krb5 \
+#    --with-mingw \
+#    --without-netapi \
+#    --with-opencl \
+#    --with-opengl \
+#    --without-oss \
+#    --with-pcap \
+#    --with-pthread \
+#    --without-pulse \
+#    --without-sane \
+#    --with-sdl \
+#    --without-udev \
+#    --with-unwind \
+#    --without-usb \
+#    --without-v4l2 \
+#    --without-x \
+#    --without-vulkan \
+#    --disable-vulkan_1 \
+#    --disable-winevulkan
+#popd
+#endgroup
+#
+#
+#begingroup "Build wine32on64-${CROSS_OVER_VERSION}"
+#pushd ${BUILDROOT}/wine32on64-${CROSS_OVER_VERSION}
+#make -k -j$(sysctl -n hw.activecpu 2>/dev/null)
+#popd
+#endgroup
+#
+#
+#begingroup "Install wine32on64-${CROSS_OVER_VERSION}"
+#pushd ${BUILDROOT}/wine32on64-${CROSS_OVER_VERSION}
+#make install-lib DESTDIR="${INSTALLROOT}/${WINE_INSTALLATION}"
+#popd
+#endgroup
 
 
 begingroup "Install wine64-${CROSS_OVER_VERSION}"
