@@ -45,10 +45,6 @@ runs:
         ln -sf /usr/local/bin/gfortran-12 /usr/local/bin/gfortran
         ln -sf /usr/local/bin/lto-dump-12 /usr/local/bin/lto-dump
 
-        ln -sf /usr/local/bin/gcc-12 /usr/local/bin/x86_64-w64-mingw32-gcc
-        ln -sf /usr/local/bin/g++-12 /usr/local/bin/x86_64-w64-mingw32-g++
-        ln -sf /usr/local/bin/gcc-ar-12 /usr/local/bin/x86_64-w64-mingw32-ar
-
         export PATH="/usr/local/bin:$PATH"
 
         which gcc
@@ -101,7 +97,15 @@ runs:
       shell: bash
       run: |
         brew install  glslang   \
+                      mingw-w64 \
                       meson
+
+        rm /usr/local/bin/x86_64-w64-mingw32-{gcc,g++,ar}
+        ln -sf /usr/local/bin/gcc-12 /usr/local/bin/x86_64-w64-mingw32-gcc
+        ln -sf /usr/local/bin/g++-12 /usr/local/bin/x86_64-w64-mingw32-g++
+        ln -sf /usr/local/bin/gcc-ar-12 /usr/local/bin/x86_64-w64-mingw32-ar
+
+        export PATH="/usr/local/bin:$PATH"
 
     - name: Build DXVK
       shell: bash
