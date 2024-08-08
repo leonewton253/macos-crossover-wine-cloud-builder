@@ -21,68 +21,15 @@ runs:
         patch -p1 < ${{ github.workspace }}/0001-build-macOS-Fix-up-for-macOS.patch
         patch -p1 < ${{ github.workspace }}/0002-fix-d3d11-header-for-MinGW-9-1883.patch
         patch -p1 < ${{ github.workspace }}/0003-fixes-for-mingw-gcc-12.patch
-        sed 's|#include <type_traits>|#include <type_traits>\n#include <cstdint>|' src/util/util_bit.h > src/util/util_bit2.h
-        mv src/util/util_bit2.h src/util/util_bit.h
-
-        sed 's|#include <iostream>|#include <iostream>\n#include <cstdint>|' src/util/util_vector.h > src/util/util_vector2.h
-        mv src/util/util_vector2.h src/util/util_vector.h
-
-        sed 's|#include "util_vector.h"|#include "util_vector.h"\n#include <cstdint>|' src/util/util_matrix.h > src/util/util_matrix2.h
-        mv src/util/util_matrix2.h src/util/util_matrix.h
-
-        sed 's|#include <string>|#include <string>\n#include <cstdint>|' src/util/config/config.h > src/util/config/config2.h
-        mv src/util/config/config2.h src/util/config/config.h
-
-        sed 's|#include "d3d11_device_child.h"|#include "d3d11_device_child.h"\n#include "d3d11_device.h"|' src/d3d11/d3d11_shader.h > src/d3d11/d3d11_shader2.h
-        sed 's|class D3D11Device;||' src/d3d11/d3d11_shader2.h > src/d3d11/d3d11_shader.h
-
         popd
 
     - name: test
       shell: bash
       run: |
-        brew update
-        which gcc
-        gcc --version
-        brew reinstall gcc@12
-
         ln -sf /usr/local/bin/gcc-12 /usr/local/bin/gcc
-
-        echo 1
-
-        which gcc-12
-        $(brew --prefix gcc@12)/bin/gcc-12 --version
-
-        echo 2
-
-        which gcc-12
-        gcc-12 --version
-
-        echo 3
-
-        /usr/local/bin/gcc --version
-
-        echo 4
-
-        ls -lah /usr/local/bin/ | grep gcc
-        which gcc
-        gcc --version
-
-        echo 5
-
         export PATH="/usr/local/bin:$PATH"
         which gcc
         gcc --version
-
-        echo 6
-
-        source ~/.bashrc
-        which gcc
-        gcc --version
-
-        echo 7
-
-        exit 1
 
     - name: Install distutils
       shell: bash
