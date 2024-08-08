@@ -39,6 +39,14 @@ runs:
 
         popd
 
+    - name: test
+      shell: bash
+      run: |
+        gcc --version
+        brew install gcc@12
+        gcc --version
+        exit 1
+
     - name: Install distutils
       shell: bash
       run: |
