@@ -26,10 +26,26 @@ runs:
     - name: test
       shell: bash
       run: |
+        ln -sf /usr/local/bin/c++-12 /usr/local/bin/c++
+        ln -sf /usr/local/bin/cpp-12 /usr/local/bin/cpp
+        ln -sf /usr/local/bin/g++-12 /usr/local/bin/g++
         ln -sf /usr/local/bin/gcc-12 /usr/local/bin/gcc
+        ln -sf /usr/local/bin/gcc-ar-12 /usr/local/bin/gcc-ar
+        ln -sf /usr/local/bin/gcc-nm-12 /usr/local/bin/gcc-nm
+        ln -sf /usr/local/bin/gcc-ranlib-12 /usr/local/bin/gcc-ranlib
+        ln -sf /usr/local/bin/gcov-12 /usr/local/bin/gcov
+        ln -sf /usr/local/bin/gcov-dump-12 /usr/local/bin/gcov-dump
+        ln -sf /usr/local/bin/gcov-tool-12 /usr/local/bin/gcov-tool
+        ln -sf /usr/local/bin/gfortran-12 /usr/local/bin/gfortran
+        ln -sf /usr/local/bin/lto-dump-12 /usr/local/bin/lto-dump
+
         export PATH="/usr/local/bin:$PATH"
+
         which gcc
         gcc --version
+
+        which cpp
+        cpp --version
 
     - name: Install distutils
       shell: bash
