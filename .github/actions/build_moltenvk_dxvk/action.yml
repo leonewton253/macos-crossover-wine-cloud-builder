@@ -48,13 +48,28 @@ runs:
 
         ln -sf /usr/local/bin/gcc-12 /usr/local/bin/gcc
 
+        echo 1
+
         which gcc-12
         $(brew --prefix gcc@12)/bin/gcc-12 --version
+
+        echo 2
+
         which gcc-12
         gcc-12 --version
+
+        echo 3
+
+        /usr/local/bin/gcc --version
+
+        echo 4
+
         ls -lah /usr/local/bin/ | grep gcc
         which gcc
         gcc --version
+
+        echo 5
+
         exit 1
 
     - name: Install distutils
