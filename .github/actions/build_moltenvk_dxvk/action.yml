@@ -43,6 +43,7 @@ runs:
       run: |
         gcc --version
         brew reinstall gcc@12
+        export PATH="/usr/local/Cellar/gcc@12/12.4.0:$PATH"
         gcc --version
         exit 1
 
