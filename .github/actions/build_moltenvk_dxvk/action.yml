@@ -101,7 +101,6 @@ runs:
       shell: bash
       run: |
         brew install  glslang   \
-                      mingw-w64 \
                       meson
 
     - name: Build DXVK
