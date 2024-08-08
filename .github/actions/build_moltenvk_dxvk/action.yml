@@ -45,10 +45,8 @@ runs:
         gcc --version
         brew reinstall gcc@12
 
-        for app in c++ cpp g++ gcc gcc-ar gcc-nm gcc-ranlib gcov gcov-dump gcov-tool gfortran lto-dump; do \
-        rm /usr/bin/$app; \
-        ln -s /usr/local/Cellar/gcc@12/12.4.0/bin/$app-12 /usr/bin/$app; \
-        done
+        ln -s /usr/local/bin/gcc-12 /usr/local/bin/gcc
+        ln -s /usr/local/bin/g++-12 /usr/local/bin/g++
 
         gcc --version
         exit 1
