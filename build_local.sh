@@ -256,16 +256,6 @@ ${WINE_CONFIGURE} \
 popd
 endgroup
 
-begingroup "test"
-pushd ${BUILDROOT}/wine64-${CROSS_OVER_VERSION}
-
-cat config.status | grep "HAVE_METAL_METAL_H"
-echo '======'
-echo '======'
-
-popd
-endgroup
-
 begingroup "Build wine64-${CROSS_OVER_VERSION}"
 pushd ${BUILDROOT}/wine64-${CROSS_OVER_VERSION}
 make -j$(sysctl -n hw.ncpu 2>/dev/null)
