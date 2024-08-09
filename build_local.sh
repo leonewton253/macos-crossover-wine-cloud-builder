@@ -259,10 +259,10 @@ endgroup
 begingroup "test"
 pushd ${BUILDROOT}/wine64-${CROSS_OVER_VERSION}
 
-cat config.status
+cat config.status | grep "HAVE_METAL_METAL_H"
 echo '======'
 echo '======'
-cat config.log
+cat config.log | grep "HAVE_METAL_METAL_H"
 
 popd
 endgroup
