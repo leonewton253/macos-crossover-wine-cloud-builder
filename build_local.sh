@@ -212,6 +212,9 @@ begingroup "Configure wine64-${CROSS_OVER_VERSION}"
 mkdir -p ${BUILDROOT}/wine64-${CROSS_OVER_VERSION}
 pushd ${BUILDROOT}/wine64-${CROSS_OVER_VERSION}
 
+sed 's|for ac_header in Metal/Metal.h|cat >>confdefs.h <<_ACEOF\n#define HAVE_METAL_METAL_H 1\n_ACEOF\nfor ac_header in Metal/Metal.h|' ${WINE_CONFIGURE} > ${WINE_CONFIGURE}2
+mv ${WINE_CONFIGURE}2 ${WINE_CONFIGURE}
+
 ${WINE_CONFIGURE} \
     --disable-option-checking \
     --enable-win64 \
