@@ -143,6 +143,15 @@ popd
 endgroup
 
 
+begingroup "test wine"
+pushd sources/wine
+
+sed 's|#include "macdrv.h"|#include "macdrv.h"\n#include "macdrv_cocoa.h"|' dlls/winemac.drv/vulkan.c > dlls/winemac.drv/vulkan2.c
+mv dlls/winemac.drv/vulkan2.c dlls/winemac.drv/vulkan.c
+
+popd
+endgroup
+
 if [[ ${CROSS_OVER_VERSION} == 22.0.0 ]]; then
     pushd sources/wine
     patch -p1 < ${GITHUB_WORKSPACE}/CX22.0.0-vkd3d-1.4.patch
