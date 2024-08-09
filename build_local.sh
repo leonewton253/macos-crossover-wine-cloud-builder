@@ -215,7 +215,7 @@ pushd ${BUILDROOT}/wine64-${CROSS_OVER_VERSION}
 sed 's|for ac_header in Metal/Metal.h|cat >>confdefs.h <<_ACEOF\n#define HAVE_METAL_METAL_H 1\n_ACEOF\nfor ac_header in Metal/Metal.h|' ${WINE_CONFIGURE} > ${WINE_CONFIGURE}2
 mv ${WINE_CONFIGURE}2 ${WINE_CONFIGURE}
 
-chmox +x ${WINE_CONFIGURE}
+chmod +x ${WINE_CONFIGURE}
 
 ${WINE_CONFIGURE} \
     --disable-option-checking \
