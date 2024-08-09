@@ -246,6 +246,11 @@ ${WINE_CONFIGURE} \
     --without-usb \
     --without-v4l2 \
     --without-x
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_METAL_METAL_H 1
+_ACEOF
+
 popd
 endgroup
 
