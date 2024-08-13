@@ -223,38 +223,38 @@ jobs:
 
       ############ Configure 32on64bit Version ##############
 
-#      - name: Configure wine32on64 (specific to 22)
-#        if: startsWith(matrix.CROSS_OVER_VERSION, '22')
-#        uses: ./.github/actions/configure_wine
-#        with:
-#          winearch: "wine32on64"
-#          build-dir: "${{ env.BUILDROOT }}/wine32on64"
-#          crossflags: "-g -O2"
-#          configure-params: "--enable-win32on64 --with-wine64=${{ env.BUILDROOT }}/wine64 --without-cms --without-openal --without-gstreamer --without-gphoto --without-krb5 --without-sane --without-vulkan --disable-vulkan_1 --disable-winedbg --disable-winevulkan"
+      - name: Configure wine32on64 (specific to 22)
+        if: startsWith(matrix.CROSS_OVER_VERSION, '22')
+        uses: ./.github/actions/configure_wine
+        with:
+          winearch: "wine32on64"
+          build-dir: "${{ env.BUILDROOT }}/wine32on64"
+          crossflags: "-g -O2"
+          configure-params: "--enable-win32on64 --with-wine64=${{ env.BUILDROOT }}/wine64 --without-cms --without-openal --without-gstreamer --without-gphoto --without-krb5 --without-sane --without-vulkan --disable-vulkan_1 --disable-winedbg --disable-winevulkan"
 
-#      - name: Configure wine32on64 (pre 22)
-#        if: ${{ matrix.CROSS_OVER_VERSION < '22' }}
-#        uses: ./.github/actions/configure_wine
-#        with:
-#          winearch: "wine32on64"
-#          build-dir: "${{ env.BUILDROOT }}/wine32on64"
-#          crossflags: "-g -O2 -fcommon"
-#          configure-params: "--enable-win32on64 --with-wine64=${{ env.BUILDROOT }}/wine64 --without-cms --without-gstreamer --without-gphoto --without-krb5 --without-sane --without-vkd3d --without-vulkan --disable-vulkan_1 --disable-winedbg --disable-winevulkan"
+      - name: Configure wine32on64 (pre 22)
+        if: ${{ matrix.CROSS_OVER_VERSION < '22' }}
+        uses: ./.github/actions/configure_wine
+        with:
+          winearch: "wine32on64"
+          build-dir: "${{ env.BUILDROOT }}/wine32on64"
+          crossflags: "-g -O2 -fcommon"
+          configure-params: "--enable-win32on64 --with-wine64=${{ env.BUILDROOT }}/wine64 --without-cms --without-gstreamer --without-gphoto --without-krb5 --without-sane --without-vkd3d --without-vulkan --disable-vulkan_1 --disable-winedbg --disable-winevulkan"
 
       ############ Build 32on64bit Version ##############
 
-#      - name: Build wine32on64
-#        uses: ./.github/actions/make
-#        with:
-#          build-dir: "${{ env.BUILDROOT }}/wine32on64"
+      - name: Build wine32on64
+        uses: ./.github/actions/make
+        with:
+          build-dir: "${{ env.BUILDROOT }}/wine32on64"
 
       ############ Install wine ##############
 
-#      - name: Install wine32on64
-#        uses: ./.github/actions/install
-#        with:
-#          build-dir: "${{ env.BUILDROOT }}/wine32on64"
-#          install-dir: "${{ env.INSTALLROOT }}/${{ env.WINE_INSTALLATION }}"
+      - name: Install wine32on64
+        uses: ./.github/actions/install
+        with:
+          build-dir: "${{ env.BUILDROOT }}/wine32on64"
+          install-dir: "${{ env.INSTALLROOT }}/${{ env.WINE_INSTALLATION }}"
 
       - name: Install wine64
         uses: ./.github/actions/install
