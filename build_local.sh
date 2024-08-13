@@ -251,7 +251,10 @@ ${WINE_CONFIGURE} \
     --with-unwind \
     --without-usb \
     --without-v4l2 \
-    --without-x
+    --without-x \
+    --without-vulkan \
+    --disable-vulkan_1 \
+    --disable-winevulkan
 
 popd
 endgroup
