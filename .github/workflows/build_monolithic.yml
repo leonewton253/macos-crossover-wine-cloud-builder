@@ -112,7 +112,7 @@ jobs:
           wget https://raw.githubusercontent.com/Homebrew/homebrew-core/d5ec00528f86b8ac31fac2a67b7667cc72aa1b04/Formula/mingw-w64.rb -O mingw-w64.rb
           brew install mingw-w64.rb
 
-          brew unlink python@3.12
+          rm /usr/local/bin/2to3 /usr/local/bin/2to3-3.12 /usr/local/bin/idle3 /usr/local/bin/idle3.12 /usr/local/bin/pydoc3 /usr/local/bin/pydoc3.12 /usr/local/bin/python3 /usr/local/bin/python3-config /usr/local/bin/python3.12 /usr/local/bin/python3.12-config
 
       - name: Install Wine Runtime Dependencies
         run: |
